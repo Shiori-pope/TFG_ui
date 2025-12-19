@@ -1,0 +1,30 @@
+
+Obtain a sequence of facial expression coefficients from the audio.
+python inference_audio2motion.py \
+    --a2m_ckpt ./pretrained_models/audio2motion/240210_real3dportrait_orig/audio2secc_vae \
+    --hubert_path ./pretrained_models/audio2motion/hubert \
+    --drv_aud ./demo/xinwen_5s.mp3 \
+    --seed 0 \
+    --result_dir ./results/a2m \
+    --exp_file xinwen_5s.npy
+Render the depth map frame by frame using the new expression coefficients.
+python -u inference_edit_expression.py \
+    --name face_recon_feat0.2_augment \
+    --epoch=20 \
+    --use_opengl False \
+    --checkpoints_dir ./pretrained_models \
+    --bfm_folder ./pretrained_models/BFM \
+    --infer_video_path ./demo/example_5s.mp4 \
+    --infer_exp_coeff_path ./results/a2m/xinwen_5s.npy \
+    --infer_result_dir ./results/edit_expression
+Generate the facial animation based on the audio features and the facial depth map.
+ CUDA_VISIBLE_DEIVCES=0 python -u inference_joygen.py \
+ --unet_model_path pretrained_models/joygen \
+ --vae_model_path pretrained_models/sd-vae-ft-mse \
+ --intermediate_dir ./results/edit_expression \
+ --audio_path demo/xinwen_5s.mp3 \
+ --video_path demo/example_5s.mp4 \
+ --enable_pose_driven \
+ --result_dir results/talk \
+ --img_size 256  \
+ --gpu_id 0 \
