@@ -10,25 +10,9 @@ WORKSPACE="/app"                        # 容器内工作目录
 
 # 获取脚本所在目录（即JoyGen目录）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-JOYGEN_DIR="$SCRIPT_DIR"               # JoyGen目录
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"  # 项目根目录
+JOYGEN_DIR="$SCRIPT_DIR"
 
 # ========== 工具函数 ==========
-
-# 转换相对路径为绝对路径
-resolve_path() {
-    local path="$1"
-    # 如果是相对路径且以 ./ 开头，基于项目根目录解析
-    if [[ "$path" == ./* ]]; then
-        path="$PROJECT_ROOT/${path#./}"
-    fi
-    # 转换为绝对路径
-    if [ -f "$path" ]; then
-        realpath "$path"
-    else
-        echo "$path"
-    fi
-}
 
 # 获取文件名（不含扩展名）
 get_basename() {
@@ -64,16 +48,10 @@ ensure_dirs() {
 
 # 检查预训练模型
 check_pretrained_models() {
-    if [ ! -d "$JOYGEN_DIR/pretrained_models" ] || [ ! "$(ls -A $JOYGEN_DIR/pretrained_models 2>/dev/null)" ]; then
-        echo "⚠️  警告：未找到 pretrained_models 目录或目录为空"
+    if [ ! -d "$JOYGEN_DIR/pretrained_models" ]; then
+        echo "⚠️  警告：未找到 pretrained_models 目录！"
         echo "    路径: $JOYGEN_DIR/pretrained_models"
-        
-        # 如果设置了严格模式，报错退出
-        if [ "$STRICT_MODE" = "true" ]; then
-            echo "❌ 错误：缺少预训练模型文件"
-            exit 1
-        fi
-        
+        echo "    请确保模型文件已解压到该目录。"
         echo "    继续执行（可能会失败）..."
     fi
 }
@@ -112,9 +90,6 @@ train() {
         exit 1
     fi
     
-    # 解析路径（支持相对于项目根目录的路径）
-    video_path=$(resolve_path "$video_path")
-    
     if [ ! -f "$video_path" ]; then
         echo "错误: 视频文件不存在: $video_path"
         exit 1
@@ -128,15 +103,8 @@ train() {
     local gpu_id=$(echo "$gpu_arg" | sed 's/GPU//')
     if [ -z "$gpu_id" ]; then gpu_id="0"; fi
     
-    # 生成模型目录名（videoName_steps{max_steps}）
-    local model_dir_name="${video_name}_steps${max_steps}"
-    local model_save_dir="$JOYGEN_DIR/checkpoints/${model_dir_name}"
-    mkdir -p "$model_save_dir"
-    
     echo "[JoyGen] 开始训练流程..."
     echo "  - 输入视频: $video_path"
-    echo "  - 视频名称: $video_name"
-    echo "  - 模型保存目录: $model_save_dir"
     echo "  - GPU设置: $gpu_arg (ID: $gpu_id)"
     echo "  - Batch Size: $batch_size"
     echo "  - Max Steps: $max_steps"
@@ -145,7 +113,7 @@ train() {
     mkdir -p "$JOYGEN_DIR/training_videos"
     cp "$video_path" "$JOYGEN_DIR/training_videos/"
     
-    local joygen_abs="$JOYGEN_DIR"
+    local joygen_abs=$(cd "$JOYGEN_DIR" && pwd)
     
     # 步骤1: 抽帧（预处理数据集）
     echo ""
@@ -216,14 +184,7 @@ train() {
     
     echo ""
     echo "[JoyGen] 训练完成！"
-    echo "  ✅ 模型保存位置: $model_save_dir"
-    echo "  ✅ 用于推理时请使用: $model_save_dir"
-    echo ""
-    echo "推理命令示例:"
-    echo "  ./JoyGen/run_joygen.sh infer \\"
-    echo "    --audio_path <音频路径> \\"
-    echo "    --video_path <视频路径> \\"
-    echo "    --model_dir $model_save_dir"
+    echo "  检查点保存位置: $JOYGEN_DIR/checkpoints/"
     
     # 清理临时文件
     echo ""
@@ -263,10 +224,6 @@ infer() {
         echo "错误: 必须指定视频路径 --video_path"
         exit 1
     fi
-    
-    # 解析路径（支持相对于项目根目录的路径）
-    audio_path=$(resolve_path "$audio_path")
-    video_path=$(resolve_path "$video_path")
     
     if [ ! -f "$audio_path" ]; then
         echo "错误: 音频文件不存在: $audio_path"
@@ -317,15 +274,7 @@ infer() {
     fi
     
     # 获取绝对路径
-    local joygen_abs="$JOYGEN_DIR"
-    
-    echo "[JoyGen] Docker挂载信息:"
-    echo "  - 工作目录: $joygen_abs"
-    echo "  - 音频目录: $joygen_abs/audio -> $WORKSPACE/audio"
-    echo "  - 视频目录: $joygen_abs/video -> $WORKSPACE/video"
-    echo "  - 结果目录: $joygen_abs/results -> $WORKSPACE/results"
-    echo "  - 模型目录: $joygen_abs/pretrained_models -> $WORKSPACE/pretrained_models"
-    echo "  - 检查模型目录: $([ -d "$joygen_abs/pretrained_models" ] && echo '存在' || echo '不存在')"
+    local joygen_abs=$(cd "$JOYGEN_DIR" && pwd)
     
     # ========== 关键修改：只挂载必要的目录 ========== 
     echo "[JoyGen] 执行推理流水线..."
@@ -340,7 +289,7 @@ infer() {
         -v "$joygen_abs/pretrained_models:$WORKSPACE/pretrained_models" \
         -e CUDA_VISIBLE_DEVICES=$gpu_id \
         $IMAGE_NAME \
-        bash -c "echo 'Container check:'; ls -la /app/pretrained_models/ | head -5; dos2unix scripts/inference_pipeline.sh 2>/dev/null || sed -i 's/\r$//' scripts/inference_pipeline.sh; bash scripts/inference_pipeline.sh audio/$audio_name video/$video_name results/$(basename "$result_dir")"
+        bash -c "dos2unix scripts/inference_pipeline.sh 2>/dev/null || sed -i 's/\r$//' scripts/inference_pipeline.sh; bash scripts/inference_pipeline.sh audio/$audio_name video/$video_name results/$(basename "$result_dir")"
     
     echo "[JoyGen] 推理完成！"
     echo "  输出视频位置: $result_dir/"
@@ -381,10 +330,6 @@ infer_manual() {
         exit 1
     fi
     
-    # 解析路径（支持相对于项目根目录的路径）
-    audio_path=$(resolve_path "$audio_path")
-    video_path=$(resolve_path "$video_path")
-    
     if [ ! -f "$audio_path" ] || [ ! -f "$video_path" ]; then
         echo "错误: 文件不存在"
         exit 1
@@ -424,7 +369,7 @@ infer_manual() {
         cp "$video_path" "$JOYGEN_DIR/video/"
     fi
     
-    local joygen_abs="$JOYGEN_DIR"
+    local joygen_abs=$(cd "$JOYGEN_DIR" && pwd)
     
     echo "[JoyGen] 步骤1/3: 音频 → 表情系数"
     docker run --rm \
@@ -501,49 +446,49 @@ usage() {
 JoyGen Docker 调用脚本 - 支持训练和推理
 
 训练模式:
-    ./JoyGen/run_joygen.sh train \
-        --video_path <视频路径> \
-        [--gpu GPU0] \
-        [--epoch 20] \
-        [--batch_size 2] \
-        [--num_workers 4] \
-        [--max_steps 2000] \
-        [--lr 2e-5] \
-        [--min_lr 1e-5] \
+    ./run_joygen.sh train \\
+        --video_path <视频路径> \\
+        [--gpu GPU0] \\
+        [--epoch 20] \\
+        [--batch_size 2] \\
+        [--num_workers 4] \\
+        [--max_steps 2000] \\
+        [--lr 2e-5] \\
+        [--min_lr 1e-5] \\
         [--checkpoint_interval 500]
 
 推理模式（简化版，推荐）:
-    ./JoyGen/run_joygen.sh infer \
-        --audio_path <音频路径> \
-        --video_path <视频路径> \
-        [--result_dir <结果目录>] \
+    ./run_joygen.sh infer \\
+        --audio_path <音频路径> \\
+        --video_path <视频路径> \\
+        [--result_dir <结果目录>] \\
         [--gpu GPU0]
 
 手动推理模式（分步执行，调试用）:
-    ./JoyGen/run_joygen.sh infer_manual \
-        --audio_path <音频路径> \
-        --video_path <视频路径> \
-        [--result_dir <结果目录>] \
+    ./run_joygen.sh infer_manual \\
+        --audio_path <音频路径> \\
+        --video_path <视频路径> \\
+        [--result_dir <结果目录>] \\
         [--gpu GPU0]
 
 示例:
     # 训练
-    ./JoyGen/run_joygen.sh train \
-        --video_path ./my_video.mp4 \
-        --gpu GPU0 \
+    ./run_joygen.sh train \\
+        --video_path ./my_video.mp4 \\
+        --gpu GPU0 \\
         --max_steps 1000
 
     # 推理
-    ./JoyGen/run_joygen.sh infer \
-        --audio_path ./demo/xinwen_5s.mp3 \
-        --video_path ./demo/example_5s.mp4 \
+    ./run_joygen.sh infer \\
+        --audio_path ./demo/xinwen_5s.mp3 \\
+        --video_path ./demo/example_5s.mp4 \\
         --gpu GPU0
 
     # 手动推理（分步调试）
-    ./JoyGen/run_joygen.sh infer_manual \
-        --audio_path ./audio.wav \
-        --video_path ./video.mp4 \
-        --result_dir ./my_results \
+    ./run_joygen.sh infer_manual \\
+        --audio_path ./audio.wav \\
+        --video_path ./video.mp4 \\
+        --result_dir ./my_results \\
         --gpu GPU1
 
 注意:
