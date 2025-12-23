@@ -8,7 +8,7 @@
       "gender": "female",
       "ref_audio": "static/audios/voice_cute.wav",
       "ref_audio_text": "是在什么样的情况下，才需要神之眼观察这个世界呢？这个问题的答案，聪明的你，能够明白吗？",
-      "ref_video": "./JoyGen/test_data/example_15s.mp4",
+      "ref_video": "static/videos/tim.mp4",
       "model_path": "./JoyGen/pretrained_models/joygen",
       "personality": "温柔体贴，声音甜美，喜欢用温暖的语气和用户交流"
     },
@@ -20,7 +20,7 @@
       "gender": "male",
       "ref_audio": "static/audios/voice_energetic.wav",
       "ref_audio_text": "所以，平台就可以有预谋的筛选推送给用户的信息",
-      "ref_video": "./JoyGen/test_data/example_5s.mp4",
+      "ref_video": "static/videos/ng.mp4",
       "model_path": "./JoyGen/pretrained_models/joygen",
       "personality": "活泼开朗，充满活力，语速较快，喜欢用感叹号"
     },
@@ -32,7 +32,7 @@
       "gender": "female",
       "ref_audio": "static/audios/voice_cool.wav",
       "ref_audio_text": "恭听太阳的轰鸣！火神玛薇卡，参战！哈哈，当然没问题，我随时准备就绪。",
-      "ref_video": "./JoyGen/test_data/example_10s.mp4",
+      "ref_video": "static/videos/yj.mp4",
       "model_path": "./JoyGen/pretrained_models/joygen",
       "personality": "知性优雅，声音成熟，说话条理清晰，适合深度对话"
     },
@@ -44,7 +44,7 @@
       "gender": "male",
       "ref_audio": "static/audios/voice_hold.wav",
       "ref_audio_text": "但个性化推荐，其实会让用户接触到的信息面越来越窄，你只会看到自己想看到的东西，最后就形成了信息茧房。",
-      "ref_video": "./JoyGen/test_data/example_8s.mp4",
+      "ref_video": "static/videos/bz.mp4",
       "model_path": "./JoyGen/pretrained_models/joygen",
       "personality": "沉稳可靠，声音浑厚，逻辑清晰，适合专业咨询"
     }
