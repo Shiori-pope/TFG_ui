@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <title>模型训练界面</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="subpage-bg">
+    <h2>模型训练界面</h2>
+    <div class="video-page-container">
+        <!-- 左侧：训练结果视频 -->
+        <div class="video-display">
+            <video id="trainVideo" controls width="420">
+                <source src="{{ url_for('static', filename='videos/sample.mp4') }}" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- 右侧：输入框 -->
+        <div class="form-section">
+            <form id="trainForm">
+                <div class="form-group">
+                    <label>模型选择</label>
+                    <select name="model_choice">
+                        <option value="JoyGen">JoyGen</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>参考视频/图像地址</label>
+                    <input type="text" name="ref_video" id="ref_video" placeholder="请输入参考视频或图像的相对路径">
+                    <input type="file" id="video_file" accept="video/*" style="margin-top: 10px;">
+                    <button type="button" onclick="uploadVideo()" style="margin-top: 5px;">上传视频</button>
+                </div>
+
+                <div class="form-group">
+                    <label>GPU选择</label>
+                    <select name="gpu_choice">
+                        <option value="GPU0">GPU 0</option>
+                        <option value="GPU1">GPU 1</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>训练步数 (Max Steps)</label>
+                    <input type="number" name="custom_params" min="1000" value="5000" step="1000">
+                    <small style="color: #666; display: block; margin-top: 5px;">推荐: 3000-10000步</small>
+                </div>
+
+                <button type="submit" class="generate-btn">Training!</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 上传视频文件
+        function uploadVideo() {
+            const fileInput = document.getElementById('video_file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('请选择视频文件');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/upload_file', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('ref_video').value = data.filepath;
+                    alert('视频上传成功！');
+                } else {
+                    alert('上传失败: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('错误:', err);
+                alert('上传出错');
+            });
+        }
+        
+        document.getElementById('trainForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            // 立即从表单获取视频路径并播放
+            const refVideoPath = formData.get('ref_video');
+            const videoEl = document.getElementById('trainVideo');
+
+            if (refVideoPath) {
+                // 立即设置视频源并播放
+                const newSrc = "/" + refVideoPath.replace("\\", "/") + '?t=' + new Date().getTime();
+                videoEl.src = newSrc;
+                videoEl.load();
+                videoEl.play().catch(e => console.log('自动播放可能被阻止:', e));
+            }
+
+            fetch('/model_training', {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('训练完成！');
+                    }
+                })
+                .catch(err => console.error('错误:', err));
+        });
+    </script>
+</body>
+
+</html>

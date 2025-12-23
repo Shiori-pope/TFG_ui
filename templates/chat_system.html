@@ -1,0 +1,2460 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>对话系统 - 声动视界</title>
+    <!-- Particles.js -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6b9d;
+            --secondary: #ffc2d4;
+            --accent: #ffb3d9;
+            --bg-main: #fff0f6;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-title: #1a1a1a;
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(255, 107, 157, 0.3);
+        }
+
+        /* 主题色彩系统 */
+        body[data-theme="sweet"] {
+            --primary: #ff6b9d;
+            --secondary: #ffc2d4;
+            --accent: #ffb3d9;
+            --bg-main: #fff0f6;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-title: #1a1a1a;
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(255, 107, 157, 0.3);
+        }
+
+        body[data-theme="cyber"] {
+            --primary: #00f0ff;
+            --secondary: #bd00ff;
+            --accent: #ff00ff;
+            --bg-main: #0a0e27;
+            --bg-card: rgba(15, 20, 50, 0.95);
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-title: #ffffff;
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(0, 240, 255, 0.4);
+        }
+
+        body[data-theme="dark"] {
+            --primary: #7b68ee;
+            --secondary: #9370db;
+            --accent: #ba55d3;
+            --bg-main: #1a1a2e;
+            --bg-card: rgba(35, 35, 60, 0.95);
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-title: #ffffff;
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(123, 104, 238, 0.4);
+        }
+
+        body[data-theme="anime"] {
+            --primary: #ff69b4;
+            --secondary: #ffa500;
+            --accent: #ffb6c1;
+            --bg-main: #ffe4e1;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-title: #1a1a1a;
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(255, 105, 180, 0.3);
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+
+        /* 粒子背景 */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        /* 动态背景 */
+        .anime-background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -2;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.8) blur(3px);
+            transition: opacity 0.5s ease;
+        }
+
+        /* 主容器 */
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 20px;
+            padding: 70px 20px 20px;  /* 减少顶部padding */
+            max-width: 1800px;
+            margin: 0 auto;
+            min-height: 100vh;
+            transition: grid-template-columns 0.3s ease;
+        }
+        
+        /* 纯语音模式布局 */
+        .main-container.audio-only-mode {
+            grid-template-columns: 400px 1fr;
+            max-width: 1400px;
+        }
+        
+        .main-container.audio-only-mode .character-panel {
+            grid-column: 1;
+        }
+        
+        .main-container.audio-only-mode .chat-area {
+            grid-column: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .main-container.audio-only-mode .history-panel {
+            display: none;
+        }
+
+        /* 卡片基础样式 */
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 左侧边栏 - 角色选择 */
+        .character-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 顶部导航栏 */
+        .top-nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            height: 60px;  /* 固定高度 */
+            box-sizing: border-box;
+        }
+
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .top-nav-center {
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-title i {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .top-nav-right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .nav-home-btn {
+            font-size: 20px;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            white-space: nowrap;  /* 防止文字换行 */
+        }
+
+        .nav-home-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-3px);
+        }
+
+        .nav-home-btn i {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .top-theme-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .top-theme-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .top-theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .top-theme-btn.active {
+            transform: scale(1.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 0 3px rgba(255, 255, 255, 0.5);
+        }
+
+        .top-theme-btn.sweet { background: linear-gradient(135deg, #ff6b9d, #ffc2d4); }
+        .top-theme-btn.cyber { background: linear-gradient(135deg, #00f0ff, #bd00ff); }
+        .top-theme-btn.dark { background: linear-gradient(135deg, #7b68ee, #9370db); }
+        .top-theme-btn.anime { background: linear-gradient(135deg, #ff69b4, #ffa500); }
+
+        .theme-switcher {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .theme-btn {
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .theme-btn.sweet {
+            background: linear-gradient(135deg, #ff6b9d, #ffc2d4);
+        }
+
+        .theme-btn.cyber {
+            background: linear-gradient(135deg, #00f0ff, #bd00ff);
+        }
+
+        .theme-btn.dark {
+            background: linear-gradient(135deg, #7b68ee, #9370db);
+        }
+
+        .theme-btn.anime {
+            background: linear-gradient(135deg, #ff69b4, #ffa500);
+        }
+
+        .character-card {
+            padding: 15px;
+            border-radius: 15px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .character-card:hover {
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .character-card.active {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .character-avatar {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .character-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .character-tag {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* 中间主区域 */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        /* 视频展示 */
+        .video-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #000;
+            min-height: 400px;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 输入区域 */
+        .input-section {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .input-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .input-mode-toggle {
+            display: flex;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px;
+            border-radius: 25px;
+        }
+
+        .input-mode-toggle button {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .input-mode-toggle button.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .text-input-wrapper {
+            flex: 1;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #textInput {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            color: var(--text-primary);
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #textInput:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        #textInput::placeholder {
+            color: var(--text-secondary);
+        }
+
+        #sendTextBtn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        #sendTextBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #sendTextBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #recordBtn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+        }
+
+        #recordBtn:hover {
+            transform: scale(1.1);
+        }
+
+        #recordBtn.recording {
+            animation: pulse 1.5s infinite;
+            background: linear-gradient(135deg, #ff4444, #ff0000);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .quick-questions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            flex: 1;
+        }
+
+        .quick-btn {
+            padding: 15px;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .quick-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* 右侧边栏 - 历史记录 */
+        .history-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .history-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .history-list {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .history-item {
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid var(--primary);
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .history-time {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-bottom: 5px;
+        }
+
+        .history-text {
+            font-size: 13px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* 状态显示 */
+        .status-panel {
+            padding: 15px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+        }
+
+        .status-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        /* 进度条样式 */
+        .progress-container {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            margin-top: 10px;
+            position: relative;
+            z-index: 100;
+        }
+
+        .progress-container.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .progress-percentage {
+            font-size: 18px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent
+            );
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-message {
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .progress-details {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Toast通知 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            background: var(--bg-card);
+            box-shadow: var(--shadow);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid #4caf50;
+        }
+
+        .toast.error {
+            border-left: 4px solid #f44336;
+        }
+
+        .toast.info {
+            border-left: 4px solid #2196f3;
+        }
+
+        /* 加载动画 */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-steps {
+            margin-top: 30px;
+        }
+
+        .loading-step {
+            padding: 10px 20px;
+            margin: 10px 0;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0.3;
+            transition: all 0.3s ease;
+        }
+
+        .loading-step.active {
+            opacity: 1;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .progress-bar {
+            width: 300px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto;  /* 角色 控制面板 对话区 历史 */
+                padding-top: 70px;
+                gap: 15px;
+            }
+            
+            /* 角色面板紧凑显示 */
+            .character-panel {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .character-panel .card:first-child {
+                max-height: none;  /* 去除高度限制 */
+            }
+
+            .quick-questions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .main-container.audio-only-mode {
+                grid-template-columns: 1fr;
+            }
+            
+            /* 确保单列布局 */
+            .character-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            /* 隐藏状态面板节省空间 */
+            .status-panel {
+                display: none;
+            }
+        }
+        
+        /* 平板端优化 */
+        @media (max-width: 1024px) {
+            .character-panel {
+                padding: 15px;
+            }
+            
+            .character-card {
+                padding: 12px;
+            }
+            
+            .chat-area {
+                padding: 15px;
+            }
+            
+            .history-panel {
+                padding: 15px;
+            }
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            /* 导航栏 */
+            .nav-bar {
+                padding: 10px 12px;
+                flex-wrap: nowrap;  /* 不换行 */
+                height: 60px;  /* 固定高度 */
+            }
+            
+            .top-nav-left,
+            .top-nav-center,
+            .top-nav-right {
+                flex: 1;
+                min-width: 0;  /* 允许收缩 */
+            }
+            
+            .nav-home-btn {
+                font-size: 14px;
+                padding: 6px 10px;
+            }
+            
+            .nav-home-btn span {
+                display: inline;  /* 确保文字横向 */
+            }
+            
+            .page-title {
+                font-size: 15px;
+            }
+            
+            .theme-switcher {
+                gap: 6px;
+            }
+            
+            .theme-btn,
+            .top-theme-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 13px;
+            }
+            
+            /* 主容器 */
+            .main-container {
+                margin-top: 50px;  /* 对应50px高的导航栏 */
+                gap: 15px;
+                padding: 15px 10px;  /* 减少padding */
+            }
+            
+            /* 角色面板 */
+            .character-panel {
+                padding: 12px;
+            }
+            
+            .character-panel .card {
+                padding: 12px;
+            }
+            
+            .panel-title {
+                font-size: 15px;
+                margin-bottom: 10px;
+            }
+            
+            .character-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            /* 纯语音模式下也保持单列 */
+            .main-container.audio-only-mode .character-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .character-card {
+                padding: 10px;
+                min-height: 60px;  /* 限制最小高度 */
+            }
+            
+            .character-avatar {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+            
+            .character-name {
+                font-size: 13px;
+            }
+            
+            .character-desc {
+                font-size: 11px;
+            }
+            
+            /* 对话区域 */
+            .chat-area {
+                padding: 15px;
+            }
+            
+            .video-container video {
+                max-height: 300px;
+            }
+            
+            .control-panel {
+                padding: 15px;
+            }
+            
+            .preset-text-section {
+                display: none; /* 移动端隐藏预设文本以节省空间 */
+            }
+            
+            .text-input-area textarea {
+                font-size: 14px;
+                padding: 10px;
+            }
+            
+            .input-actions button,
+            .recording-section button {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+            
+            .audio-only-toggle {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .generate-button {
+                padding: 14px;
+                font-size: 15px;
+            }
+            
+            /* 历史记录面板 */
+            .history-panel {
+                padding: 15px;
+            }
+            
+            .history-item {
+                padding: 12px;
+            }
+            
+            .history-text {
+                font-size: 13px;
+            }
+        }
+        
+        /* 小屏手机优化 */
+        @media (max-width: 480px) {
+            /* 进一步缩小元素 */
+            .nav-bar {
+                padding: 6px 10px;
+                height: 50px;  /* 小屏更小的高度 */
+            }
+            
+            .top-nav-bar {
+                padding: 8px 10px;
+                height: 50px;
+            }
+            
+            .nav-logo {
+                font-size: 16px;
+            }
+            
+            .nav-home-btn {
+                font-size: 12px;
+                padding: 5px 8px;
+                gap: 4px;
+            }
+            
+            .nav-home-btn span {
+                display: none;  /* 小屏隐藏文字 */
+            }
+            
+            .page-title {
+                font-size: 13px;
+            }
+            
+            .theme-btn,
+            .top-theme-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 11px;
+            }
+            
+            .top-theme-switcher {
+                gap: 5px;
+            }
+            
+            /* 角色卡片单列显示 */
+            .character-grid {
+                grid-template-columns: 1fr;  /* 确保单列 */
+            }
+            
+            /* 纯语音模式确保单列 */
+            .main-container.audio-only-mode .character-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .character-card {
+                flex-direction: row;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .character-info {
+                text-align: left;
+            }
+            
+            /* 视频容器 */
+            .video-container video {
+                max-height: 250px;
+            }
+            
+            /* 快捷问题单列 */
+            .quick-questions {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-question-btn {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            
+            /* 输入区域 */
+            .text-input-area textarea {
+                font-size: 13px;
+                min-height: 80px;
+            }
+            
+            .input-actions button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            /* 录音区域 */
+            .recording-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .recording-section button {
+                width: 100%;
+            }
+            
+            /* 生成按钮 */
+            .generate-button {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            /* 历史记录 */
+            .history-item {
+                padding: 10px;
+            }
+            
+            .history-text {
+                font-size: 12px;
+            }
+        }
+        
+        /* 移动端触摸优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .character-card:active {
+                transform: scale(0.98);
+            }
+            
+            .quick-question-btn:active {
+                transform: scale(0.98);
+            }
+            
+            button:active {
+                transform: scale(0.98);
+            }
+            
+            .theme-btn:active {
+                transform: scale(0.9);
+            }
+            
+            /* 禁用鼠标悬停效果 */
+            .character-card:hover {
+                transform: none;
+            }
+        }
+        
+        /* 紧凑历史记录样式 */
+        .audio-mode-history {
+            margin-top: 20px;
+        }
+        
+        .compact-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .compact-history-item {
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .compact-history-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+        
+        .compact-history-icon {
+            font-size: 16px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .compact-history-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .compact-history-text {
+            font-size: 13px;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 3px;
+        }
+        
+        .compact-history-time {
+            font-size: 11px;
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+        
+        /* Toggle开关样式 */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(120, 120, 128, 0.3);
+            transition: 0.4s;
+            border-radius: 26px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .toggle-switch input:checked + .toggle-slider {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* 脉冲动画 */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+    </style>
+</head>
+<body data-theme="sweet">
+    <!-- 粒子背景 -->
+    <div id="particles-js"></div>
+    
+    <!-- 动态背景 -->
+    <div class="anime-background" id="animeBackground"></div>
+
+    <!-- 加载动画 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>处理中...</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="loading-steps">
+                <div class="loading-step" data-step="1"><i class="fas fa-microphone"></i> 语音识别中...</div>
+                <div class="loading-step" data-step="2"><i class="fas fa-brain"></i> AI思考中...</div>
+                <div class="loading-step" data-step="3"><i class="fas fa-volume-up"></i> 语音合成中...</div>
+                <div class="loading-step" data-step="4"><i class="fas fa-video"></i> 视频生成中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast通知 -->
+    <div class="toast" id="toast">
+        <i class="fas fa-info-circle"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <nav class="top-nav-bar">
+        <div class="top-nav-left">
+            <a href="/" class="nav-home-btn">
+                <i class="fas fa-home"></i>
+                <span>返回主页</span>
+            </a>
+        </div>
+        <div class="top-nav-center">
+            <div class="page-title">
+                <i class="fas fa-microphone-alt"></i>
+                <span>实时对话系统</span>
+            </div>
+        </div>
+        <div class="top-nav-right">
+            <div class="top-theme-switcher">
+                <button class="top-theme-btn dark" onclick="switchTheme('dark')" title="深夜模式">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="top-theme-btn sweet" onclick="switchTheme('sweet')" title="甜美少女">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <button class="top-theme-btn cyber" onclick="switchTheme('cyber')" title="赛博朋克">
+                    <i class="fas fa-robot"></i>
+                </button>
+                <button class="top-theme-btn anime" onclick="switchTheme('anime')" title="二次元">
+                    <i class="fas fa-star"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 左侧边栏 - 角色选择 -->
+        <div class="character-panel">
+            <div class="card">
+                <h3 style="text-align: center; margin-bottom: 15px;">
+                    <i class="fas fa-users"></i> 角色选择
+                </h3>
+                <div id="characterCardsContainer">
+                    <!-- 动态加载角色卡片 -->
+                </div>
+            </div>
+            
+            <!-- 纯语音模式开关 -->
+            <div class="card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="font-size: 24px;">🎤</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px; color: var(--text-primary);">纯语音模式</div>
+                            <div style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">⚡ 响应速度提升5倍</div>
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="audioOnlyToggle" onchange="toggleAudioOnlyMode()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px; border-left: 3px solid var(--primary-color);">
+                    <i class="fas fa-lightbulb" style="color: #ffd700;"></i> 开启后只生成语音回复，不渲染视频，响应时间从60秒降至10秒
+                </div>
+            </div>
+        </div>
+
+        <!-- 中间主区域 -->
+        <div class="chat-area">
+            <div class="card video-container">
+                <video id="videoPlayer" controls style="display: none;">
+                    <source src="" type="video/mp4">
+                </video>
+                <div id="videoPlaceholder" style="display: flex; justify-content: center; align-items: center; height: 400px; color: white; font-size: 24px;">
+                    <div style="text-align: center;">
+                        <i class="fas fa-video" style="font-size: 64px; margin-bottom: 20px; opacity: 0.5;"></i>
+                        <p>视频将在这里显示</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card input-section">
+                <!-- 输入模式切换 -->
+                <div class="input-controls">
+                    <div class="input-mode-toggle">
+                        <button class="mode-btn active" data-mode="voice">
+                            <i class="fas fa-microphone"></i> 语音输入
+                        </button>
+                        <button class="mode-btn" data-mode="text">
+                            <i class="fas fa-keyboard"></i> 文本输入
+                        </button>
+                    </div>
+
+                    <!-- 语音输入 -->
+                    <div id="voiceInputArea" class="text-input-wrapper">
+                        <button id="recordBtn" title="点击开始录音">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+
+                    <!-- 文本输入（默认隐藏） -->
+                    <div id="textInputArea" class="text-input-wrapper" style="display: none;">
+                        <input type="text" id="textInput" placeholder="输入您想说的话..." />
+                        <button id="sendTextBtn">
+                            <i class="fas fa-paper-plane"></i> 发送
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 进度条 -->
+                <div id="progressContainer" class="progress-container">
+                    <div class="progress-header">
+                        <div class="progress-title">
+                            <span id="progressTitle"><i class="fas fa-spinner fa-spin"></i> 处理中</span>
+                        </div>
+                        <div class="progress-percentage">
+                            <span id="progressPercentage">0</span>%
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="progress-message">
+                        <span id="progressMessage">初始化...</span>
+                    </div>
+                    <div class="progress-details">
+                        <span id="progressStep">步骤: 0/0</span>
+                        <span id="progressTime">用时: 0s</span>
+                    </div>
+                </div>
+
+                <!-- 快速问题 -->
+                <div class="quick-questions">
+                    <button class="quick-btn" onclick="quickQuestion('你好')">
+                        <i class="fas fa-hand-paper"></i> 你好
+                    </button>
+                    <button class="quick-btn" onclick="quickQuestion('今天天气怎么样')">
+                        <i class="fas fa-cloud-sun"></i> 天气
+                    </button>
+                    <button class="quick-btn" onclick="quickQuestion('给我讲个笑话')">
+                        <i class="fas fa-laugh"></i> 讲笑话
+                    </button>
+                    <button class="quick-btn" onclick="quickQuestion('介绍一下你自己')">
+                        <i class="fas fa-user-circle"></i> 自我介绍
+                    </button>
+                    <button class="quick-btn" onclick="quickQuestion('给我一些建议')">
+                        <i class="fas fa-lightbulb"></i> 给建议
+                    </button>
+                    <button class="quick-btn" onclick="quickQuestion('晚安')">
+                        <i class="fas fa-bed"></i> 晚安
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 纯语音模式下的历史记录（紧凑版） -->
+            <div class="card audio-mode-history" id="audioModeHistory" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 16px;">
+                        <i class="fas fa-history"></i> 
+                        <span>最近对话</span>
+                    </h3>
+                    <button onclick="clearHistory()" style="background: rgba(255, 59, 48, 0.1); border: none; padding: 5px 10px; border-radius: 12px; color: #ff3b30; cursor: pointer; font-size: 11px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 59, 48, 0.2)'" onmouseout="this.style.background='rgba(255, 59, 48, 0.1)'">
+                        <i class="fas fa-trash"></i> 清空
+                    </button>
+                </div>
+                <div class="compact-history-list" id="compactHistoryList" style="max-height: 300px; overflow-y: auto;">
+                    <!-- 动态加载紧凑历史记录 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧边栏 - 历史记录 -->
+        <div class="history-panel">
+            <div class="card">
+                <div class="history-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span><i class="fas fa-history"></i> 对话历史</span>
+                    <button onclick="clearHistory()" style="background: rgba(255, 59, 48, 0.1); border: none; padding: 5px 12px; border-radius: 15px; color: #ff3b30; cursor: pointer; font-size: 12px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255, 59, 48, 0.2)'" onmouseout="this.style.background='rgba(255, 59, 48, 0.1)'">
+                        <i class="fas fa-trash"></i> 清空
+                    </button>
+                </div>
+                <div class="history-list" id="historyList">
+                    <!-- 动态加载历史记录 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let audioContext;
+        let analyser;
+        let dataArray;
+        let animationId;
+        let characters = {};  // 从JSON加载
+        let currentCharacter = 'xiaoya';
+        let currentTheme = 'dark';  // 默认深夜模式
+        let audioOnlyMode = false;  // 纯语音模式
+        let currentAudio = null;  // 当前播放的音频对象
+
+        // 主题背景映射
+        const themeBackgrounds = {
+            sweet: 'static/images/bg_anime1.jpg',
+            cyber: 'static/images/bg_anime2.jpg',
+            dark: 'static/images/bg_anime3.jpg',
+            anime: 'static/images/bg_anime4.jpg'
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 首先加载角色配置
+            await loadCharacterConfig();
+            
+            initParticles();
+            loadHistory();
+            setupCharacterSelection();
+            setupRecording();
+            setupTextInput();
+            setupInputModeToggle();
+            updateBackground();
+            
+            // 从localStorage恢复主题
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            switchTheme(savedTheme);
+        });
+        
+        // 加载角色配置
+        async function loadCharacterConfig() {
+            try {
+                const response = await fetch('/config/characters.json');
+                const config = await response.json();
+                
+                // 转换配置格式
+                characters = {};
+                config.characters.forEach(char => {
+                    characters[char.id] = {
+                        name: char.name,
+                        avatar: char.avatar,
+                        description: char.description,
+                        video: char.ref_video,
+                        audio: char.ref_audio,
+                        model: char.model_path,
+                        gender: char.gender,
+                        personality: char.personality
+                    };
+                });
+                
+                // 渲染角色卡片
+                renderCharacterCards(config.characters);
+                
+                // 设置默认角色
+                currentCharacter = config.settings.default_character || 'xiaoya';
+                
+                console.log('[Config] 角色配置加载成功:', characters);
+            } catch (error) {
+                console.error('[Config] 加载角色配置失败:', error);
+                // 使用默认配置
+                useDefaultCharacters();
+            }
+        }
+        
+        // 渲染角色卡片
+        function renderCharacterCards(charactersData) {
+            const container = document.getElementById('characterCardsContainer');
+            if (!container) return;
+            
+            container.innerHTML = charactersData.map((char, index) => `
+                <div class="character-card ${index === 0 ? 'active' : ''}" data-character="${char.id}">
+                    <div class="character-avatar">${char.avatar}</div>
+                    <div class="character-name">${char.name}</div>
+                    <div class="character-tag">${char.description}</div>
+                </div>
+            `).join('');
+        }
+        
+        // 使用默认角色配置（备用）
+        function useDefaultCharacters() {
+            characters = {
+                xiaoya: {
+                    name: '小雅',
+                    avatar: '🌸',
+                    video: './JoyGen/test_data/example_15s.mp4',
+                    audio: 'static/audios/voice_cute.wav',
+                    model: './JoyGen/pretrained_models/joygen',
+                    gender: 'female'
+                },
+                xiaochen: {
+                    name: '小晨',
+                    avatar: '⚡',
+                    video: './JoyGen/test_data/example_5s.mp4',
+                    audio: 'static/audios/voice_energetic.wav',
+                    model: './JoyGen/pretrained_models/joygen',
+                    gender: 'female'
+                },
+                xiaoxue: {
+                    name: '小雪',
+                    avatar: '❄️',
+                    video: './JoyGen/test_data/example_10s.mp4',
+                    audio: 'static/audios/voice_cool.wav',
+                    model: './JoyGen/pretrained_models/joygen',
+                    gender: 'female'
+                },
+                xiaoming: {
+                    name: '小明',
+                    avatar: '🎯',
+                    video: './JoyGen/test_data/example_8s.mp4',
+                    audio: 'static/audios/voice_cool.wav',
+                    model: './JoyGen/pretrained_models/joygen',
+                    gender: 'male'
+                }
+            };
+        }
+
+        // 初始化粒子背景
+        function initParticles() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: getComputedStyle(document.documentElement).getPropertyValue('--primary') },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: getComputedStyle(document.documentElement).getPropertyValue('--primary'),
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: { enable: true, mode: 'repulse' },
+                        onclick: { enable: true, mode: 'push' },
+                        resize: true
+                    }
+                },
+                retina_detect: true
+            });
+        }
+
+        // 主题切换
+        function switchTheme(theme) {
+            currentTheme = theme;
+            document.body.setAttribute('data-theme', theme);
+            updateBackground();
+            localStorage.setItem('theme', theme);
+            
+            // 添加激活状态到按钮
+            document.querySelectorAll('.top-theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = document.querySelector(`.top-theme-btn.${theme}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            
+            showToast(`已切换到${theme}主题`, 'success');
+            
+            // 重新初始化粒子颜色
+            setTimeout(() => {
+                initParticles();
+            }, 300);
+        }
+
+        // 更新背景
+        function updateBackground() {
+            const bg = document.getElementById('animeBackground');
+            const imgPath = themeBackgrounds[currentTheme];
+            bg.style.backgroundImage = `url('${imgPath}')`;
+        }
+
+        // 角色选择
+        function setupCharacterSelection() {
+            document.querySelectorAll('.character-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.character-card').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    currentCharacter = this.getAttribute('data-character');
+                    showToast(`已选择${characters[currentCharacter].name}`, 'success');
+                });
+            });
+        }
+
+        // 录音功能
+        function setupRecording() {
+            const recordBtn = document.getElementById('recordBtn');
+            
+            recordBtn.addEventListener('click', async function() {
+                if (!isRecording) {
+                    await startRecording();
+                } else {
+                    await stopRecording();
+                }
+            });
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // 设置音频可视化
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaStreamSource(stream);
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                source.connect(analyser);
+                
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    
+                    // 检查录音数据
+                    console.log('录音完成，数据大小:', audioBlob.size, 'bytes');
+                    
+                    if (audioBlob.size < 1000) {
+                        showToast('⚠️ 录音数据太小，可能未录制成功', 'warning', 4000);
+                        showToast('💡 建议：说话时间至少2秒，或使用文本输入', 'info', 4000);
+                    } else {
+                        showToast('录音完成，正在处理...', 'info');
+                        await sendAudio(audioBlob);
+                    }
+                    
+                    // 清理
+                    stream.getTracks().forEach(track => track.stop());
+                    if (audioContext) {
+                        audioContext.close();
+                        audioContext = null;
+                        analyser = null;
+                    }
+                };
+                
+                mediaRecorder.start();
+                isRecording = true;
+                
+                // 记录开始时间
+                const recordStartTime = Date.now();
+                
+                document.getElementById('recordBtn').classList.add('recording');
+                document.getElementById('recordBtn').innerHTML = '<i class="fas fa-stop"></i>';
+                showToast('🎤 录音中... (说话至少2秒)', 'info');
+                
+                // 3秒后提示可以停止
+                setTimeout(() => {
+                    if (isRecording) {
+                        const elapsed = Math.floor((Date.now() - recordStartTime) / 1000);
+                        showToast(`✅ 已录音 ${elapsed} 秒，可点击停止`, 'success', 2000);
+                    }
+                }, 3000);
+                
+            } catch (error) {
+                console.error('录音失败:', error);
+                showToast('无法访问麦克风', 'error');
+            }
+        }
+
+        async function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                document.getElementById('recordBtn').classList.remove('recording');
+                document.getElementById('recordBtn').innerHTML = '<i class="fas fa-microphone"></i>';
+            }
+        }
+
+        // 快捷问题
+        function quickQuestion(text) {
+            showToast(`发送: ${text}`, 'info');
+            // 模拟发送语音
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-CN';
+            window.speechSynthesis.speak(utterance);
+            
+            // 创建模拟音频blob并发送
+            setTimeout(() => {
+                sendTextAsAudio(text);
+            }, 500);
+        }
+
+        // 发送文本作为音频
+        async function sendTextAsAudio(text) {
+            showLoading(0);
+            
+            try {
+                const formData = new FormData();
+                // 使用文本直接作为输入
+                formData.append('text_input', text);
+                formData.append('ref_audio', characters[currentCharacter].audio);
+                formData.append('ref_video', characters[currentCharacter].video);
+                formData.append('model_path', characters[currentCharacter].model);
+                formData.append('audio_only', audioOnlyMode ? 'true' : 'false');  // 添加纯语音模式标识
+                
+                const response = await fetch('/chat_system', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                hideLoading();
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    
+                    if (result.status === 'success') {
+                        if (audioOnlyMode) {
+                            // 纯语音模式：只播放音频
+                            const audioPath = result.audio_path;
+                            if (audioPath) {
+                                playAudio(audioPath);
+                                saveHistory(result.user_text || text, audioPath, 'audio');
+                                showToast('✅ 语音回复生成成功！', 'success');
+                            } else {
+                                showToast('❌ 未收到音频路径', 'error');
+                            }
+                        } else {
+                            // 视频模式：播放视频
+                            const videoPath = result.video_path;
+                            if (videoPath) {
+                                playVideo(videoPath);
+                                saveHistory(result.user_text || text, videoPath, 'video');
+                                showToast('✅ 视频生成成功！', 'success');
+                            } else {
+                                showToast('❌ 未收到视频路径', 'error');
+                            }
+                        }
+                    } else if (result.error) {
+                        showToast('错误: ' + result.error, 'error');
+                    }
+                } else {
+                    showToast('请求失败', 'error');
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('发送失败:', error);
+                showToast('处理失败', 'error');
+            }
+        }
+
+        // 发送音频
+        async function sendAudio(audioBlob) {
+            showLoading(0);
+            
+            try {
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.webm');
+                formData.append('ref_audio', characters[currentCharacter].audio);
+                formData.append('ref_video', characters[currentCharacter].video);
+                formData.append('model_path', characters[currentCharacter].model);
+                formData.append('audio_only', audioOnlyMode ? 'true' : 'false');  // 添加纯语音模式标识
+                
+                // 模拟进度
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 25;
+                    if (progress <= 100) {
+                        updateLoadingProgress(progress);
+                    } else {
+                        clearInterval(progressInterval);
+                    }
+                }, 2000);
+                
+                const response = await fetch('/chat_system', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                clearInterval(progressInterval);
+                hideLoading();
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('[sendAudio] 响应结果:', result);
+                    
+                    if (result.status === 'success') {
+                        if (audioOnlyMode) {
+                            // 纯语音模式：只播放音频
+                            // 优先使用返回的audio_path，确保是唯一的文件
+                            const audioPath = result.audio_path;
+                            if (audioPath) {
+                                playAudio(audioPath);
+                                // 保存历史（音频路径）
+                                saveHistory(result.user_text || '语音输入', audioPath, 'audio');
+                                showToast('✅ 语音回复生成成功！', 'success');
+                            } else {
+                                showToast('❌ 未收到音频路径', 'error');
+                            }
+                        } else {
+                            // 视频模式：播放视频
+                            const videoPath = result.video_path;
+                            if (videoPath) {
+                                playVideo(videoPath);
+                                saveHistory(result.user_text || '语音输入', videoPath, 'video');
+                                showToast('✅ 视频生成成功！', 'success');
+                            } else {
+                                showToast('❌ 未收到视频路径', 'error');
+                            }
+                        }
+                    } else if (result.status === 'error') {
+                        // 显示详细错误信息
+                        const errorMsg = result.message || '未知错误';
+                        showToast('❌ ' + errorMsg, 'error', 5000);
+                        
+                        // 如果是语音识别失败，提示使用文本输入
+                        if (errorMsg.includes('语音识别失败') || errorMsg.includes('无法识别')) {
+                            setTimeout(() => {
+                                showToast('💡 建议：点击切换到"文本输入"模式', 'info', 4000);
+                            }, 2000);
+                        }
+                    } else if (result.video_url) {
+                        // 向后兼容
+                        playVideo(result.video_url);
+                        saveHistory(result.user_text || '语音输入', result.video_url);
+                        showToast('视频生成成功!', 'success');
+                    } else if (result.error) {
+                        showToast('错误: ' + result.error, 'error', 5000);
+                    }
+                } else {
+                    const errorText = await response.text();
+                    showToast('请求失败: ' + response.status, 'error');
+                    console.error('Response error:', errorText);
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('发送失败:', error);
+                showToast('处理失败', 'error');
+            }
+        }
+
+        // 纯语音模式切换
+        function toggleAudioOnlyMode() {
+            audioOnlyMode = document.getElementById('audioOnlyToggle').checked;
+            const videoContainer = document.querySelector('.video-container');
+            const audioModeHistory = document.getElementById('audioModeHistory');
+            const mainContainer = document.querySelector('.main-container');
+            
+            if (audioOnlyMode) {
+                // 开启纯语音模式
+                videoContainer.style.display = 'none';
+                audioModeHistory.style.display = 'block';
+                mainContainer.classList.add('audio-only-mode');
+                showToast('✅ 已开启纯语音模式，响应更快！', 'success');
+                
+                // 加载紧凑历史记录
+                loadCompactHistory();
+                
+                // 停止当前视频播放
+                const video = document.getElementById('videoPlayer');
+                if (video) {
+                    video.pause();
+                    video.currentTime = 0;
+                }
+            } else {
+                // 关闭纯语音模式
+                videoContainer.style.display = 'block';
+                audioModeHistory.style.display = 'none';
+                mainContainer.classList.remove('audio-only-mode');
+                showToast('✅ 已关闭纯语音模式', 'info');
+                
+                // 停止当前音频播放
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
+            }
+        }
+
+        // 播放音频（纯语音模式）
+        function playAudio(audioUrl) {
+            if (!audioUrl) {
+                console.error('[playAudio] 音频路径为空');
+                return;
+            }
+            
+            // 标准化路径
+            let normalizedUrl = audioUrl;
+            if (!normalizedUrl.startsWith('/') && !normalizedUrl.startsWith('http')) {
+                normalizedUrl = normalizedUrl.replace(/^\.[\.\/\\]/, '');
+                normalizedUrl = '/' + normalizedUrl;
+            }
+            normalizedUrl = normalizedUrl.replace(/\\/g, '/');
+            
+            console.log('[playAudio] 播放音频:', normalizedUrl);
+            
+            // 停止之前的音频
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+            
+            // 创建音频元素播放
+            currentAudio = new Audio(normalizedUrl);
+            
+            currentAudio.play().then(() => {
+                showToast('🔊 正在播放语音回复...', 'info');
+            }).catch(err => {
+                console.error('[playAudio] 播放失败:', err);
+                showToast('音频播放失败', 'error');
+            });
+        }
+
+        // 播放视频
+        function playVideo(url) {
+            if (!url) {
+                console.error('[playVideo] 视频路径为空');
+                showToast('视频路径无效', 'error');
+                return;
+            }
+            
+            // 标准化路径：确保以 / 开头
+            let normalizedUrl = url;
+            if (!normalizedUrl.startsWith('/') && !normalizedUrl.startsWith('http')) {
+                // 移除开头的 ./ 或 .\
+                normalizedUrl = normalizedUrl.replace(/^\.[\/\\]/, '');
+                // 添加 / 前缀
+                normalizedUrl = '/' + normalizedUrl;
+            }
+            // 统一使用正斜杠
+            normalizedUrl = normalizedUrl.replace(/\\/g, '/');
+            
+            console.log('[playVideo] 原始路径:', url);
+            console.log('[playVideo] 标准化路径:', normalizedUrl);
+            
+            const video = document.getElementById('videoPlayer');
+            const placeholder = document.getElementById('videoPlaceholder');
+            
+            video.src = normalizedUrl;
+            video.style.display = 'block';
+            placeholder.style.display = 'none';
+            
+            // 添加加载错误处理
+            video.onerror = function() {
+                console.error('[playVideo] 视频加载失败:', normalizedUrl);
+                showToast('视频加载失败，请检查文件是否存在', 'error');
+                video.style.display = 'none';
+                placeholder.style.display = 'flex';
+            };
+            
+            video.play().catch(err => {
+                console.error('[playVideo] 播放失败:', err);
+                showToast('视频播放失败', 'error');
+            });
+        }
+
+        // Toast通知
+        function showToast(message, type = 'info', duration = 3000) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toast.className = `toast ${type}`;
+            toastMessage.textContent = message;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        // 加载动画
+        function showLoading(step) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('active');
+            updateLoadingStep(step);
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('active');
+            updateLoadingProgress(0);
+        }
+
+        function updateLoadingStep(step) {
+            document.querySelectorAll('.loading-step').forEach((el, index) => {
+                el.classList.toggle('active', index === step);
+            });
+        }
+
+        function updateLoadingProgress(percent) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            
+            if (percent >= 25) updateLoadingStep(1);
+            if (percent >= 50) updateLoadingStep(2);
+            if (percent >= 75) updateLoadingStep(3);
+        }
+
+        // 历史记录
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+            const historyList = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary); opacity: 0.6;">暂无对话记录</div>';
+                return;
+            }
+            
+            historyList.innerHTML = history.slice(-20).reverse().map((item, index) => {
+                // 使用 data 属性而不是 onclick 属性来存储路径
+                const safeText = (item.text || '未知').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const mediaType = item.mediaType || 'video';
+                const mediaUrl = mediaType === 'audio' ? item.audio : item.video;
+                const typeIcon = mediaType === 'audio' ? '🔊' : '🎥';
+                
+                return `
+                    <div class="history-item" data-media="${mediaUrl || ''}" data-type="${mediaType}" data-index="${index}">
+                        <div class="history-time">${item.time || ''} ${typeIcon}</div>
+                        <div class="history-text">${safeText}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            // 为每个历史记录项添加点击事件
+            document.querySelectorAll('.history-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const mediaUrl = this.getAttribute('data-media');
+                    const mediaType = this.getAttribute('data-type');
+                    playHistoryItem(mediaUrl, mediaType);
+                });
+            });
+        }
+
+        function saveHistory(text, mediaUrl, mediaType = 'video') {
+            if (!text || !mediaUrl) {
+                console.warn('[History] 保存失败：文本或媒体路径为空', { text, mediaUrl });
+                return;
+            }
+            
+            const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+            const now = new Date();
+            const time = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            const newItem = { 
+                text, 
+                video: mediaType === 'video' ? mediaUrl : '',  // 视频路径
+                audio: mediaType === 'audio' ? mediaUrl : '',  // 音频路径
+                mediaType: mediaType,  // 媒体类型
+                time, 
+                timestamp: Date.now() 
+            };
+            history.push(newItem);
+            
+            console.log('[History] 保存记录:', newItem);
+            
+            // 只保留最近50条
+            if (history.length > 50) {
+                history.shift();
+            }
+            
+            try {
+                localStorage.setItem('chatHistory', JSON.stringify(history));
+                loadHistory();
+                loadCompactHistory();  // 同时更新紧凑历史
+                console.log('[History] 保存成功，当前记录数:', history.length);
+            } catch (e) {
+                console.error('[History] localStorage保存失败:', e);
+                showToast('历史记录保存失败', 'warning');
+            }
+        }
+
+        function playHistoryItem(mediaUrl, mediaType = 'video') {
+            if (!mediaUrl) {
+                console.error('[History] 媒体路径为空');
+                showToast('媒体路径无效', 'error');
+                return;
+            }
+            console.log('[History] 播放历史记录:', mediaUrl, '类型:', mediaType);
+            
+            if (mediaType === 'audio') {
+                playAudio(mediaUrl);
+                showToast('播放历史音频', 'info');
+            } else {
+                playVideo(mediaUrl);
+                showToast('播放历史视频', 'info');
+            }
+        }
+        
+        // 加载紧凑历史记录（纯语音模式）
+        function loadCompactHistory() {
+            const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+            const compactList = document.getElementById('compactHistoryList');
+            
+            if (!compactList) return;
+            
+            if (history.length === 0) {
+                compactList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary); font-size: 12px; opacity: 0.6;">暂无对话记录</div>';
+                return;
+            }
+            
+            // 只显示最近10条
+            compactList.innerHTML = history.slice(-10).reverse().map((item, index) => {
+                const safeText = (item.text || '未知').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                const mediaType = item.mediaType || 'video';
+                const mediaUrl = mediaType === 'audio' ? item.audio : item.video;
+                const typeIcon = mediaType === 'audio' ? '🔊' : '🎥';
+                
+                return `
+                    <div class="compact-history-item" data-media="${mediaUrl || ''}" data-type="${mediaType}">
+                        <div class="compact-history-icon">${typeIcon}</div>
+                        <div class="compact-history-content">
+                            <div class="compact-history-text">${safeText}</div>
+                            <div class="compact-history-time">${item.time || ''}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // 为每个历史记录项添加点击事件
+            document.querySelectorAll('.compact-history-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const mediaUrl = this.getAttribute('data-media');
+                    const mediaType = this.getAttribute('data-type');
+                    playHistoryItem(mediaUrl, mediaType);
+                });
+            });
+        }
+
+        function clearHistory() {
+            if (confirm('确定要清空所有对话历史吗？此操作不可恢复。')) {
+                localStorage.removeItem('chatHistory');
+                loadHistory();
+                loadCompactHistory();  // 同时清空紧凑历史
+                showToast('历史记录已清空', 'success');
+                console.log('[History] 历史记录已清空');
+            }
+        }
+
+        // ========== 新增功能: 输入模式切换 ==========
+        function setupInputModeToggle() {
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            const voiceArea = document.getElementById('voiceInputArea');
+            const textArea = document.getElementById('textInputArea');
+
+            modeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const mode = btn.dataset.mode;
+                    
+                    // 更新按钮状态
+                    modeButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // 切换输入区域
+                    if (mode === 'voice') {
+                        voiceArea.style.display = 'flex';
+                        textArea.style.display = 'none';
+                    } else {
+                        voiceArea.style.display = 'none';
+                        textArea.style.display = 'flex';
+                    }
+                });
+            });
+        }
+
+        // ========== 新增功能: 文本输入 ==========
+        function setupTextInput() {
+            const textInput = document.getElementById('textInput');
+            const sendBtn = document.getElementById('sendTextBtn');
+
+            sendBtn.addEventListener('click', () => {
+                const text = textInput.value.trim();
+                if (text) {
+                    sendTextToVideo(text);
+                    textInput.value = '';
+                }
+            });
+
+            textInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const text = textInput.value.trim();
+                    if (text) {
+                        sendTextToVideo(text);
+                        textInput.value = '';
+                    }
+                }
+            });
+        }
+
+        // ========== 新增功能: 文本转视频（跳过语音识别） ==========
+        async function sendTextToVideo(text) {
+            showToast(`处理: ${text}`, 'info');
+            showProgress();
+
+            try {
+                const requestBody = {
+                    text: text,
+                    ref_audio: characters[currentCharacter].audio,
+                    ref_video: characters[currentCharacter].video,
+                    model_param: characters[currentCharacter].model,
+                    gpu_choice: 'GPU0',
+                    audio_only: audioOnlyMode,  // 添加纯语音模式标识
+                    character_name: characters[currentCharacter].name,  // 添加角色名字
+                    character_personality: characters[currentCharacter].personality  // 添加角色性格
+                };
+                
+                const response = await fetch('/api/text_to_video', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    const taskId = data.task_id;
+                    showToast('任务已创建，开始处理...', 'success');
+                    
+                    // 轮询进度
+                    pollProgress(taskId, text);
+                } else {
+                    hideProgress();
+                    showToast('任务创建失败: ' + data.message, 'error');
+                }
+            } catch (error) {
+                hideProgress();
+                showToast('请求失败: ' + error, 'error');
+                console.error('Error:', error);
+            }
+        }
+
+        // ========== 新增功能: 轮询任务进度 ==========
+        async function pollProgress(taskId, originalText) {
+            const maxAttempts = 600; // 最多轮询 10 分钟（每秒一次）
+            let attempts = 0;
+            const startTime = Date.now();
+
+            const interval = setInterval(async () => {
+                attempts++;
+
+                try {
+                    const response = await fetch(`/api/progress/${taskId}`);
+                    const data = await response.json();
+
+                    if (data.status === 'success') {
+                        const task = data.task;
+                        
+                        // 更新进度显示
+                        updateProgress(
+                            task.progress,
+                            task.message,
+                            task.current_step,
+                            task.total_steps,
+                            Math.floor((Date.now() - startTime) / 1000)
+                        );
+
+                        // 检查任务是否完成
+                        if (task.status === 'completed') {
+                            clearInterval(interval);
+                            hideProgress();
+                            
+                            if (audioOnlyMode) {
+                                // 纯语音模式：播放音频
+                                // 从返回消息中提取实际的音频路径
+                                const audioMatch = task.message.match(/语音生成完成:\s*(.+)/);
+                                const audioPath = audioMatch ? audioMatch[1].trim() : './static/audios/response.wav';
+                                playAudio(audioPath);
+                                saveHistory(originalText, audioPath, 'audio');
+                                showToast('✅ 语音回复生成成功！', 'success');
+                            } else {
+                                // 视频模式：播放视频
+                                const match = task.message.match(/视频生成完成:\s*(.+)/);
+                                if (match) {
+                                    const videoPath = match[1].trim();
+                                    playVideo(videoPath);
+                                    saveHistory(originalText, videoPath, 'video');
+                                    showToast('✅ 视频生成成功！', 'success');
+                                } else {
+                                    showToast('任务完成，但未找到视频路径', 'warning');
+                                }
+                            }
+                        } else if (task.status === 'failed') {
+                            clearInterval(interval);
+                            hideProgress();
+                            showToast('任务失败: ' + task.message, 'error');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Progress poll error:', error);
+                }
+
+                // 超时检查
+                if (attempts >= maxAttempts) {
+                    clearInterval(interval);
+                    hideProgress();
+                    showToast('任务超时，请检查后台服务', 'error');
+                }
+            }, 1000); // 每秒轮询一次
+        }
+
+        // ========== 进度条控制 ==========
+        function showProgress() {
+            const container = document.getElementById('progressContainer');
+            container.classList.add('active');
+            
+            // 根据纯语音模式设置初始标题
+            const progressTitle = document.getElementById('progressTitle');
+            if (audioOnlyMode) {
+                progressTitle.innerHTML = '<i class="fas fa-volume-up"></i> 合成音频';
+            } else {
+                progressTitle.innerHTML = '<i class="fas fa-video"></i> 合成视频';
+            }
+            
+            updateProgress(0, '初始化...', 0, 0, 0);
+        }
+
+        function hideProgress() {
+            const container = document.getElementById('progressContainer');
+            setTimeout(() => {
+                container.classList.remove('active');
+            }, 500);
+        }
+
+        function updateProgress(percentage, message, currentStep, totalSteps, elapsedTime) {
+            document.getElementById('progressPercentage').textContent = percentage;
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressMessage').textContent = message;
+            
+            // 根据纯语音模式显示不同的标题
+            const progressTitle = document.getElementById('progressTitle');
+            if (audioOnlyMode) {
+                progressTitle.innerHTML = '<i class="fas fa-volume-up"></i> 合成音频';
+            } else {
+                progressTitle.innerHTML = '<i class="fas fa-video"></i> 合成视频';
+            }
+            
+            if (totalSteps > 0) {
+                document.getElementById('progressStep').textContent = `步骤: ${currentStep}/${totalSteps}`;
+            } else {
+                document.getElementById('progressStep').textContent = `步骤: ${currentStep}`;
+            }
+            
+            document.getElementById('progressTime').textContent = `用时: ${elapsedTime}s`;
+        }
+
+        // ========== 修改快速问题使用新API ==========
+        function quickQuestion(text) {
+            showToast(`发送: ${text}`, 'info');
+            sendTextToVideo(text);
+        }
+    </script>
+</body>
+</html>

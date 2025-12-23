@@ -1,0 +1,131 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+GPT-SoVITS-v2pro/runtime/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# Model Weights and Checkpoints (文件很大，不应提交)
+GPT-SoVITS-v2pro/GPT_weights/
+GPT-SoVITS-v2pro/GPT_weights_v2/
+GPT-SoVITS-v2pro/GPT_weights_v2Pro/
+GPT-SoVITS-v2pro/GPT_weights_v2ProPlus/
+GPT-SoVITS-v2pro/GPT_weights_v3/
+GPT-SoVITS-v2pro/GPT_weights_v4/
+GPT-SoVITS-v2pro/SoVITS_weights/
+GPT-SoVITS-v2pro/SoVITS_weights_v2/
+GPT-SoVITS-v2pro/SoVITS_weights_v2Pro/
+GPT-SoVITS-v2pro/SoVITS_weights_v2ProPlus/
+GPT-SoVITS-v2pro/SoVITS_weights_v3/
+GPT-SoVITS-v2pro/SoVITS_weights_v4/
+JoyGen/checkpoints/
+JoyGen/pretrained_models/
+
+# Logs and Temp Files
+logs/
+*.log
+GPT-SoVITS-v2pro/logs/
+GPT-SoVITS-v2pro/TEMP/
+JoyGen/tmp/
+
+# Output and Results
+output/
+GPT-SoVITS-v2pro/output/
+JoyGen/results/
+
+# Generated Media Files
+static/audios/*
+!static/audios/.gitkeep
+static/videos/*
+!static/videos/.gitkeep
+JoyGen/audio/
+JoyGen/video/
+
+# Upload Files
+uploads/*
+!uploads/.gitkeep
+
+# Training Data (文件通常很大)
+JoyGen/training_videos/
+test_data/
+
+# GPT-SoVITS-v2pro (保留目录但不提交内容)
+GPT-SoVITS-v2pro/*
+!GPT-SoVITS-v2pro/.gitkeep
+
+# JoyGen - 只排除模型和大文件目录的内容，但保留目录结构
+JoyGen/checkpoints/*
+!JoyGen/checkpoints/.gitkeep
+JoyGen/pretrained_models/*
+!JoyGen/pretrained_models/.gitkeep
+JoyGen/results/*
+!JoyGen/results/.gitkeep
+JoyGen/audio/
+JoyGen/video/
+JoyGen/tmp/
+JoyGen/training_videos/
+JoyGen/test_data/
+
+# Old Repos
+SyncTalk/SyncTalk/
+GPT-SoVITS/
+
+# System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup Files
+*.bak
+*.backup
+*.old
+*.orig
+*.swp
+*.swo
+*~
+
+# Compressed Files
+*.zip
+*.tar.gz
+*.rar
+*.7z

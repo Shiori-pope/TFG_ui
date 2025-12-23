@@ -1,0 +1,16 @@
+{
+  "tts_settings": {
+    "text_split_method": "cut5",
+    "batch_size": 1,
+    "media_type": "wav",
+    "streaming_mode": false,
+    "timeout": 60,
+    "default_prompt_text": "你好",
+    "api_url": "http://127.0.0.1:9880"
+  },
+  "notes": {
+    "purpose": "TTS服务技术配置，不包含角色信息",
+    "character_config": "角色和音频信息请查看 config/characters.json",
+    "update_instruction": "修改此文件后无需重启服务"
+  }
+}

@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型训练 - 声动视界</title>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff6b9d;
+            --secondary: #ffc2d4;
+            --accent: #ffb3d9;
+            --bg-main: #fff0f6;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-title: #1a1a1a;
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(255, 107, 157, 0.3);
+        }
+
+        body[data-theme="sweet"] {
+            --primary: #ff6b9d;
+            --secondary: #ffc2d4;
+            --accent: #ffb3d9;
+            --bg-main: #fff0f6;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-title: #1a1a1a;
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(255, 107, 157, 0.3);
+        }
+
+        body[data-theme="cyber"] {
+            --primary: #00f0ff;
+            --secondary: #bd00ff;
+            --accent: #ff00ff;
+            --bg-main: #0a0e27;
+            --bg-card: rgba(15, 20, 50, 0.95);
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --text-title: #ffffff;
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(0, 240, 255, 0.4);
+        }
+
+        body[data-theme="dark"] {
+            --primary: #7b68ee;
+            --secondary: #9370db;
+            --accent: #ba55d3;
+            --bg-main: #1a1a2e;
+            --bg-card: rgba(35, 35, 60, 0.95);
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-title: #ffffff;
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(123, 104, 238, 0.4);
+        }
+
+        body[data-theme="anime"] {
+            --primary: #ff69b4;
+            --secondary: #ffa500;
+            --accent: #ffb6c1;
+            --bg-main: #ffe4e1;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #2c2c2c;
+            --text-secondary: #666666;
+            --text-title: #1a1a1a;
+            --text-light: #ffffff;
+            --shadow: 0 8px 32px rgba(255, 105, 180, 0.3);
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .anime-background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -2;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.8) blur(3px);
+            transition: opacity 0.5s ease;
+        }
+
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .nav-center {
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-title i {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .nav-logo {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .theme-switcher {
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-btn.active {
+            transform: scale(1.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 0 3px rgba(255, 255, 255, 0.5);
+        }
+
+        .theme-btn.sweet { background: linear-gradient(135deg, #ff6b9d, #ffc2d4); }
+        .theme-btn.cyber { background: linear-gradient(135deg, #00f0ff, #bd00ff); }
+        .theme-btn.dark { background: linear-gradient(135deg, #7b68ee, #9370db); }
+        .theme-btn.anime { background: linear-gradient(135deg, #ff69b4, #ffa500); }
+
+        .container {
+            max-width: 1400px;
+            margin: 80px auto 40px;
+            padding: 30px 20px;
+        }
+
+        /* 功能说明 */
+        .page-description {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 3px 12px rgba(0, 0, 0, 0.06);
+            backdrop-filter: blur(10px);
+        }
+
+        .page-description p {
+            color: var(--text-primary);
+            font-size: 14px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .page-description i {
+            color: var(--primary);
+            font-size: 16px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .video-placeholder i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .form-group label i {
+            margin-right: 5px;
+            color: var(--primary);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.5);
+            color: var(--text-primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .info-box {
+            background: var(--bg-card);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 3px 12px rgba(0, 0, 0, 0.06);
+            backdrop-filter: blur(10px);
+        }
+
+        .info-box h4 {
+            margin-bottom: 12px;
+            color: var(--text-title);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+
+        .info-box h4 i {
+            color: var(--primary);
+        }
+
+        .info-box p {
+            font-size: 13px;
+            color: var(--text-primary);
+            line-height: 1.8;
+            margin: 0;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            background: var(--bg-card);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left: 4px solid #4caf50;
+        }
+
+        .toast.error {
+            border-left: 4px solid #f44336;
+        }
+
+        .toast.warning {
+            border-left: 4px solid #ff9800;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            /* 导航栏移动端优化 */
+            .nav-bar {
+                padding: 8px 15px;
+                flex-wrap: wrap;
+            }
+            
+            .nav-logo {
+                font-size: 16px;
+            }
+            
+            .nav-logo span {
+                display: none; /* 隐藏文字只保留图标 */
+            }
+            
+            .page-title {
+                font-size: 16px;
+            }
+            
+            .theme-switcher {
+                gap: 8px;
+            }
+            
+            .theme-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+            
+            /* 容器优化 */
+            .container {
+                margin-top: 70px;
+                padding: 15px;
+            }
+            
+            /* 页面描述 */
+            .page-description {
+                padding: 12px;
+                font-size: 13px;
+            }
+            
+            /* 训练卡片 */
+            .training-card {
+                padding: 20px 15px;
+            }
+            
+            .card-title {
+                font-size: 18px;
+                margin-bottom: 20px;
+            }
+            
+            .form-group label {
+                font-size: 13px;
+            }
+            
+            .form-group input,
+            .form-group select {
+                font-size: 14px;
+                padding: 10px;
+            }
+            
+            .file-input-wrapper {
+                padding: 15px;
+            }
+            
+            .file-input-wrapper i {
+                font-size: 28px;
+            }
+            
+            .training-btn {
+                padding: 14px;
+                font-size: 15px;
+            }
+            
+            /* 进度卡片 */
+            .progress-card {
+                padding: 15px;
+            }
+            
+            .progress-title {
+                font-size: 16px;
+            }
+            
+            .progress-stats {
+                font-size: 13px;
+            }
+            
+            /* 日志卡片 */
+            .log-card {
+                padding: 15px;
+            }
+            
+            .log-title {
+                font-size: 16px;
+            }
+            
+            .log-content {
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            /* 进一步缩小 */
+            .nav-bar {
+                padding: 6px 10px;
+            }
+            
+            .page-title {
+                font-size: 14px;
+            }
+            
+            .theme-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+            
+            /* 主题切换器换行 */
+            .theme-switcher {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                margin-top: 8px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .training-card,
+            .progress-card,
+            .log-card {
+                padding: 15px 12px;
+            }
+            
+            .card-title,
+            .progress-title,
+            .log-title {
+                font-size: 16px;
+            }
+            
+            .form-group {
+                margin-bottom: 15px;
+            }
+            
+            .form-group label {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+            
+            .form-group input,
+            .form-group select {
+                font-size: 13px;
+                padding: 8px;
+            }
+            
+            .file-input-wrapper {
+                padding: 12px;
+            }
+            
+            .training-btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .progress-stats {
+                font-size: 12px;
+            }
+            
+            .log-content {
+                font-size: 11px;
+            }
+        }
+        
+        /* 移动端触摸优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .training-btn:active {
+                transform: scale(0.98);
+            }
+            
+            .theme-btn:active {
+                transform: scale(0.9);
+            }
+            
+            .file-input-wrapper:active {
+                transform: scale(0.99);
+            }
+        }
+    </style>
+</head>
+<body data-theme="sweet">
+    <div id="particles-js"></div>
+    <div class="anime-background" id="animeBackground"></div>
+
+    <!-- 导航栏 -->
+    <nav class="nav-bar">
+        <div class="nav-left">
+            <a href="/" class="nav-logo">
+                <i class="fas fa-home"></i>
+                <span>返回主页</span>
+            </a>
+        </div>
+        <div class="nav-center">
+            <div class="page-title">
+                <i class="fas fa-brain"></i>
+                <span>模型训练</span>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="theme-switcher">
+                <button class="theme-btn dark" onclick="switchTheme('dark')" title="深夜模式">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="theme-btn sweet" onclick="switchTheme('sweet')" title="甜美少女">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <button class="theme-btn cyber" onclick="switchTheme('cyber')" title="赛博朋克">
+                    <i class="fas fa-robot"></i>
+                </button>
+                <button class="theme-btn anime" onclick="switchTheme('anime')" title="二次元">
+                    <i class="fas fa-star"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 加载动画 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>训练进行中...</h2>
+            <p>这可能需要几小时，请耐心等待</p>
+        </div>
+    </div>
+
+    <!-- Toast通知 -->
+    <div class="toast" id="toast">
+        <i class="fas fa-info-circle"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <div class="container">
+
+        <!-- 提示信息 -->
+        <div class="info-box">
+            <h4><i class="fas fa-info-circle"></i> 训练须知</h4>
+            <p>
+                ⚠️ 训练过程可能需要数小时，建议使用GPU加速。<br>
+                📊 推荐训练步数：3000-10000步，步数越多效果越好但耗时更长。<br>
+                🎬 参考视频需要清晰度高、内容完整的视频文件。<br>
+                💾 训练完成后模型会保存到 checkpoints 目录。
+            </p>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-grid">
+            <!-- 左侧：结果预览 -->
+            <div class="card">
+                <div class="video-container">
+                    <video id="trainVideo" controls>
+                        <source src="{{ url_for('static', filename='videos/sample.mp4') }}" type="video/mp4">
+                    </video>
+                    <div class="video-placeholder" id="videoPlaceholder">
+                        <i class="fas fa-cogs"></i>
+                        <p>训练结果将在这里显示</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：训练参数 -->
+            <div class="card">
+                <form id="trainForm">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-brain"></i> 模型选择
+                        </label>
+                        <select name="model_choice">
+                            <option value="JoyGen">JoyGen</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-file-video"></i> 参考视频地址
+                        </label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="text" name="ref_video" id="ref_video" placeholder="点击上传按钮选择视频文件" style="flex: 6;">
+                            <button type="button" class="btn btn-secondary" onclick="triggerVideoUpload()" style="flex: 1; white-space: nowrap;">
+                                <i class="fas fa-upload"></i> 上传
+                            </button>
+                        </div>
+                        <input type="file" id="video_file" accept=".mp4" style="display: none;" onchange="uploadVideo()">
+                        <small>仅支持 MP4 视频格式</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-microchip"></i> GPU选择
+                        </label>
+                        <select name="gpu_choice">
+                            <option value="GPU0">GPU 0</option>
+                            <option value="GPU1">GPU 1</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-tachometer-alt"></i> 训练步数 (Max Steps)
+                        </label>
+                        <input type="number" name="custom_params" min="1000" value="5000" step="1000">
+                        <small>推荐: 3000-10000步，步数越多效果越好</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-rocket"></i> 开始训练
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const themeBackgrounds = {
+            sweet: 'static/images/bg_anime1.jpg',
+            cyber: 'static/images/bg_anime2.jpg',
+            dark: 'static/images/bg_anime3.jpg',
+            anime: 'static/images/bg_anime4.jpg'
+        };
+
+        let currentTheme = 'sweet';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initParticles();
+            const savedTheme = localStorage.getItem('theme') || 'sweet';
+            switchTheme(savedTheme);
+        });
+
+        function initParticles() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 60, density: { enable: true, value_area: 800 } },
+                    color: { value: getComputedStyle(document.documentElement).getPropertyValue('--primary') },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: getComputedStyle(document.documentElement).getPropertyValue('--primary'),
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: { enable: true, speed: 2 }
+                },
+                interactivity: {
+                    events: {
+                        onhover: { enable: true, mode: 'repulse' },
+                        onclick: { enable: true, mode: 'push' }
+                    }
+                },
+                retina_detect: true
+            });
+        }
+
+        function switchTheme(theme) {
+            currentTheme = theme;
+            document.body.setAttribute('data-theme', theme);
+            const bg = document.getElementById('animeBackground');
+            bg.style.backgroundImage = `url('${themeBackgrounds[theme]}')`;
+            localStorage.setItem('theme', theme);
+            
+            // 添加激活状态到按钮
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = document.querySelector(`.theme-btn.${theme}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            
+            setTimeout(() => initParticles(), 300);
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toast.className = `toast ${type}`;
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function triggerVideoUpload() {
+            // 点击上传按钮时，触发文件选择
+            document.getElementById('video_file').click();
+        }
+
+        function uploadVideo() {
+            const fileInput = document.getElementById('video_file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                return;  // 用户取消选择，不显示错误
+            }
+            
+            // 验证文件格式（只允许 MP4）
+            const fileName = file.name.toLowerCase();
+            if (!fileName.endsWith('.mp4')) {
+                showToast('❌ 仅支持 MP4 格式！', 'error');
+                fileInput.value = '';  // 清空选择
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            showLoading();
+            
+            fetch('/upload_file', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                hideLoading();
+                if (data.status === 'success') {
+                    // 自动填充到输入框
+                    document.getElementById('ref_video').value = data.filepath;
+                    showToast('✅ 视频上传成功！', 'success');
+                } else {
+                    showToast('❌ 上传失败: ' + data.message, 'error');
+                }
+            })
+            .catch(err => {
+                hideLoading();
+                console.error('错误:', err);
+                showToast('❌ 上传出错', 'error');
+            });
+        }
+        
+        document.getElementById('trainForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const steps = formData.get('custom_params');
+            
+            if (steps < 1000) {
+                showToast('训练步数至少需要1000步', 'warning');
+                return;
+            }
+            
+            showLoading();
+            showToast('训练已开始，请耐心等待...', 'info');
+
+            fetch('/model_training', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                hideLoading();
+                console.log("后端返回:", data);
+                if (data.status === 'success') {
+                    showToast('训练完成！', 'success');
+                    if (data.test_video) {
+                        const videoEl = document.getElementById('trainVideo');
+                        const placeholder = document.getElementById('videoPlaceholder');
+                        const newSrc = data.test_video + '?t=' + new Date().getTime();
+                        videoEl.src = newSrc;
+                        videoEl.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        videoEl.load();
+                        videoEl.play().catch(err => console.warn('自动播放被阻止:', err));
+                    }
+                } else {
+                    showToast('训练失败: ' + (data.message || '未知错误'), 'error');
+                }
+            })
+            .catch(err => {
+                hideLoading();
+                console.error('错误:', err);
+                showToast('训练出错', 'error');
+            });
+        });
+    </script>
+</body>
+</html>
