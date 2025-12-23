@@ -23,20 +23,26 @@
                 <div class="form-group">
                     <label>模型名称</label>
                     <select name="model_name">
-                        <option value="model1">Model 1</option>
-                        <option value="model2">Model 2</option>
-                        <option value="SyncTalk">SyncTalk</option>
+                        <option value="JoyGen">JoyGen</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label>模型目录地址</label>
-                    <input type="text" name="model_param" placeholder="请输入模型目录路径">
+                    <input type="text" name="model_param" value="./JoyGen/pretrained_models/joygen" placeholder="使用预训练默认模型">
+                </div>
+
+                <div class="form-group">
+                    <label>参考视频地址</label>
+                    <input type="text" name="ref_video" id="ref_video" value="./JoyGen/test_data/example_5s.mp4" placeholder="使用预训练模型时必填">
+                    <small style="color: #666; display: block; margin-top: 5px;">预训练模型需要提供参考视频</small>
                 </div>
 
                 <div class="form-group">
                     <label>参考音频地址</label>
-                    <input type="text" name="ref_audio" placeholder="请输入音频路径">
+                    <input type="text" name="ref_audio" id="ref_audio" placeholder="请输入音频路径">
+                    <input type="file" id="audio_file" accept="audio/*" style="margin-top: 10px;">
+                    <button type="button" onclick="uploadAudio()" style="margin-top: 5px;">上传音频</button>
                 </div>
                 
                 <div class="form-group">
@@ -47,17 +53,44 @@
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label>目标文字（文本框）</label>
-                    <textarea name="target_text" placeholder="留空则直接使用参考音频"></textarea>
-                </div>
-
                 <button type="submit" class="generate-btn">生成视频</button>
             </form>
         </div>
     </div>
 
     <script>
+        // 上传音频文件
+        function uploadAudio() {
+            const fileInput = document.getElementById('audio_file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('请选择音频文件');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/upload_file', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('ref_audio').value = data.filepath;
+                    alert('音频上传成功！');
+                } else {
+                    alert('上传失败: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('错误:', err);
+                alert('上传出错');
+            });
+        }
+        
         document.getElementById('videoForm').addEventListener('submit', function (e) {
             e.preventDefault();
 

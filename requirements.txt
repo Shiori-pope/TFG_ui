@@ -1,1 +1,6 @@
 Flask==3.0.3
+SpeechRecognition
+openai>=1.0.0
+requests
+pydub
+werkzeug

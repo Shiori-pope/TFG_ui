@@ -213,31 +213,31 @@
                 <div class="form-group">
                     <label>模型名称</label>
                     <select name="model_name">
-                        <option value="model1">Model 1</option>
-                        <option value="model2">Model 2</option>
-                        <option value="SyncTalk">SyncTalk</option>
+                        <option value="JoyGen">JoyGen</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label>模型目录地址</label>
-                    <input type="text" name="model_param" placeholder="请输入模型目录路径">
+                    <input type="text" name="model_param" value="./JoyGen/pretrained_models/joygen" placeholder="使用预训练默认模型">
                 </div>
 
                 <div class="form-group">
-                    <label>语音克隆模型名称</label>
-                    <select name="voice_clone">
-                        <option value="cloneA">Voice Clone A</option>
-                        <option value="cloneB">Voice Clone B</option>
+                    <label>视频素材选择</label>
+                    <select name="ref_video">
+                        <option value="./JoyGen/test_data/example_15s.mp4" selected>15秒示例视频（默认）</option>
+                        <option value="./JoyGen/test_data/example_5s.mp4">5秒示例视频</option>
                     </select>
+                    <small style="color: #666; display: block; margin-top: 5px;">选择生成视频的人物形象</small>
                 </div>
 
                 <div class="form-group">
-                    <label>对话API选择</label>
-                    <select name="api_choice">
-                        <option value="openai">OpenAI API</option>
-                        <option value="azure">Azure Speech API</option>
+                    <label>参考音频选择</label>
+                    <select name="ref_audio">
+                        <option value="static/audios/ref_5s.wav" selected>5秒参考音频（默认）</option>
+                        <option value="static/audios/input.wav">使用录制的音频</option>
                     </select>
+                    <small style="color: #666; display: block; margin-top: 5px;">选择语音合成的音色参考</small>
                 </div>
 
                 <button type="submit" class="generate-btn">🎤 开始对话</button>
@@ -283,11 +283,12 @@
                 };
                 
                 mediaRecorder.onstop = () => {
-                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    // 使用 audio/webm 或 audio/ogg，然后让后端转换
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                     
                     // 创建FormData并发送到服务器
                     const formData = new FormData();
-                    formData.append('audio', audioBlob, 'input.wav');
+                    formData.append('audio', audioBlob, 'input.webm');
                     
                     fetch('/save_audio', {
                         method: 'POST',
