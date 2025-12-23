@@ -37,13 +37,14 @@ pip install -r requirements.txt
 ### 外部组件
 
 1. **GPT-SoVITS** - 语音合成引擎
-   - 放置于 `GPT-SoVITS-v2pro/` 目录
-   - 需要预训练模型
+   - 下载地址：[GPT-SoVITS-v2pro](https://www.modelscope.cn/models/FlowerCry/gpt-sovits-7z-pacakges/resolve/master/GPT-SoVITS-v2pro-20250604.7z)
+   - 解压到 `GPT-SoVITS-v2pro/` 目录
 
 2. **JoyGen** - 数字人视频生成
    - 放置于 `JoyGen/` 目录
    - 需要 Docker 镜像 `joygen:v1.0`
-   - 需要预训练模型放置于 `JoyGen/pretrained_models/`
+   - 预训练模型下载：[JoyGen Pretrained Models](https://drive.google.com/file/d/1kvGsljFRnXKUK_ETdd49jJy8DbdgZKkE/edit)
+   - 解压到 `JoyGen/pretrained_models/` 目录
 
 ## 快速启动
 
