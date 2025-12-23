@@ -1,0 +1,89 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environment variables
+.env
+.env.local
+
+# 模型文件夹 - 保留文件夹结构但忽略文件内容
+pretrained_models/**/*
+!pretrained_models/**/
+!pretrained_models/**/.gitkeep
+
+# 结果文件夹
+results/
+
+# 中间文件
+mid/
+
+# 测试数据中的视频文件
+testdata/*.mp4
+testdata/*.mov
+testdata/*.mkv
+testdata/*.avi
+testdata/*.flv
+testdata/*.webm
+
+# 音频和视频文件夹 - 保留文件夹结构但忽略文件内容
+audio/**/*
+!audio/**/
+!audio/**/.gitkeep
+
+video/**/*
+!video/**/
+!video/**/.gitkeep
+
+# 临时文件
+tmp/
+temp/
+*.tmp
+__HD_Temp__/
+
+# 日志文件
+*.log
+
+# 其他常见的大文件
+*.npy
+*.ckpt
+*.pth
+*.pt
+*.mat
+*.safetensors
+*.zip

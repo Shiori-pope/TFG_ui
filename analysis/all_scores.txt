@@ -1,0 +1,300 @@
+
+>>> Video ID: pair_001_vA_aB <<<
+12.1528635 2.292142
+
+>>> Video ID: pair_001_vB_aA <<<
+8.921802 4.5844164
+
+>>> Video ID: pair_002_vA_aB <<<
+8.811549 5.3542156
+
+>>> Video ID: pair_002_vB_aA <<<
+10.599521 3.110386
+
+>>> Video ID: pair_003_vA_aB <<<
+9.0592985 4.5923615
+
+>>> Video ID: pair_003_vB_aA <<<
+8.633466 5.24911
+
+>>> Video ID: pair_004_vA_aB <<<
+8.716516 5.833232
+
+>>> Video ID: pair_004_vB_aA <<<
+10.207207 4.2110176
+
+>>> Video ID: pair_005_vA_aB <<<
+9.513644 3.527728
+
+>>> Video ID: pair_005_vB_aA <<<
+8.921953 5.0982914
+
+>>> Video ID: pair_006_vA_aB <<<
+9.299429 4.524537
+
+>>> Video ID: pair_006_vB_aA <<<
+9.704331 3.423727
+
+>>> Video ID: pair_007_vA_aB <<<
+8.88663 5.042886
+
+>>> Video ID: pair_007_vB_aA <<<
+9.103941 4.4298983
+
+>>> Video ID: pair_008_vA_aB <<<
+8.888493 4.9999065
+
+>>> Video ID: pair_008_vB_aA <<<
+9.157965 4.4761057
+
+>>> Video ID: pair_009_vA_aB <<<
+9.094791 5.7152348
+
+>>> Video ID: pair_009_vB_aA <<<
+9.524878 3.602872
+
+>>> Video ID: pair_010_vA_aB <<<
+8.776793 5.479905
+
+>>> Video ID: pair_010_vB_aA <<<
+8.847945 6.069397
+
+>>> Video ID: pair_011_vA_aB <<<
+9.410938 4.8579407
+
+>>> Video ID: pair_011_vB_aA <<<
+10.409257 3.1885643
+
+>>> Video ID: pair_012_vA_aB <<<
+8.746678 5.2051163
+
+>>> Video ID: pair_012_vB_aA <<<
+9.939973 2.811346
+
+>>> Video ID: pair_013_vA_aB <<<
+9.0512905 6.1014147
+
+>>> Video ID: pair_013_vB_aA <<<
+10.39877 4.6268015
+
+>>> Video ID: pair_014_vA_aB <<<
+10.411373 2.644166
+
+>>> Video ID: pair_014_vB_aA <<<
+9.189994 3.5106602
+
+>>> Video ID: pair_015_vA_aB <<<
+9.043173 5.0535564
+
+>>> Video ID: pair_015_vB_aA <<<
+10.49073 2.6368961
+
+>>> Video ID: pair_016_vA_aB <<<
+8.436026 5.672514
+
+>>> Video ID: pair_016_vB_aA <<<
+8.915369 3.575737
+
+>>> Video ID: pair_017_vA_aB <<<
+9.849171 4.296196
+
+>>> Video ID: pair_017_vB_aA <<<
+9.568489 4.4552536
+
+>>> Video ID: pair_018_vA_aB <<<
+8.057391 6.250223
+
+>>> Video ID: pair_018_vB_aA <<<
+10.302471 3.7199564
+
+>>> Video ID: pair_019_vA_aB <<<
+9.144071 5.5076485
+
+>>> Video ID: pair_019_vB_aA <<<
+9.183898 5.7730227
+
+>>> Video ID: pair_020_vA_aB <<<
+9.496168 4.0430784
+
+>>> Video ID: pair_020_vB_aA <<<
+9.543724 5.044941
+
+>>> Video ID: pair_021_vA_aB <<<
+9.947938 4.8446255
+
+>>> Video ID: pair_021_vB_aA <<<
+9.507384 5.316592
+
+>>> Video ID: pair_022_vA_aB <<<
+9.66072 5.5511227
+
+>>> Video ID: pair_022_vB_aA <<<
+9.619204 4.9955225
+
+>>> Video ID: pair_023_vA_aB <<<
+8.642621 5.318246
+
+>>> Video ID: pair_023_vB_aA <<<
+9.572453 3.515727
+
+>>> Video ID: pair_024_vA_aB <<<
+7.5635343 7.1632876
+
+>>> Video ID: pair_024_vB_aA <<<
+9.614538 4.628804
+
+>>> Video ID: pair_025_vA_aB <<<
+8.456431 6.106118
+
+>>> Video ID: pair_025_vB_aA <<<
+9.936281 3.6996126
+
+>>> Video ID: pair_026_vA_aB <<<
+9.678431 4.6001654
+
+>>> Video ID: pair_026_vB_aA <<<
+9.513472 4.8619146
+
+>>> Video ID: pair_027_vA_aB <<<
+10.224236 3.9632187
+
+>>> Video ID: pair_027_vB_aA <<<
+9.116255 5.8549833
+
+>>> Video ID: pair_028_vA_aB <<<
+7.85121 6.5314755
+
+>>> Video ID: pair_028_vB_aA <<<
+10.194919 3.3087711
+
+>>> Video ID: pair_029_vA_aB <<<
+10.128945 3.6772413
+
+>>> Video ID: pair_029_vB_aA <<<
+9.1649685 5.4229774
+
+>>> Video ID: pair_030_vA_aB <<<
+9.701953 5.031641
+
+>>> Video ID: pair_030_vB_aA <<<
+9.826041 3.8129234
+
+>>> Video ID: pair_031_vA_aB <<<
+9.8504715 4.791485
+
+>>> Video ID: pair_031_vB_aA <<<
+9.449394 5.0626316
+
+>>> Video ID: pair_032_vA_aB <<<
+9.218473 4.6839895
+
+>>> Video ID: pair_032_vB_aA <<<
+9.427041 4.498128
+
+>>> Video ID: pair_033_vA_aB <<<
+8.855993 4.124755
+
+>>> Video ID: pair_033_vB_aA <<<
+10.034141 3.337185
+
+>>> Video ID: pair_034_vA_aB <<<
+9.663043 3.368063
+
+>>> Video ID: pair_034_vB_aA <<<
+8.994759 5.9246054
+
+>>> Video ID: pair_035_vA_aB <<<
+8.641995 4.9249983
+
+>>> Video ID: pair_035_vB_aA <<<
+9.197533 3.9574814
+
+>>> Video ID: pair_036_vA_aB <<<
+9.400678 4.01509
+
+>>> Video ID: pair_036_vB_aA <<<
+8.474164 5.930357
+
+>>> Video ID: pair_037_vA_aB <<<
+8.2928915 5.128093
+
+>>> Video ID: pair_037_vB_aA <<<
+8.31335 4.775384
+
+>>> Video ID: pair_038_vA_aB <<<
+9.213948 5.440798
+
+>>> Video ID: pair_038_vB_aA <<<
+8.99246 5.723365
+
+>>> Video ID: pair_039_vA_aB <<<
+9.2035675 5.271579
+
+>>> Video ID: pair_039_vB_aA <<<
+8.995886 5.5429688
+
+>>> Video ID: pair_040_vA_aB <<<
+9.0149975 5.432294
+
+>>> Video ID: pair_040_vB_aA <<<
+9.327186 5.4997005
+
+>>> Video ID: pair_041_vA_aB <<<
+11.608657 2.949565
+
+>>> Video ID: pair_041_vB_aA <<<
+10.220077 5.0381174
+
+>>> Video ID: pair_042_vA_aB <<<
+9.658361 4.5869036
+
+>>> Video ID: pair_042_vB_aA <<<
+9.2758 5.2356634
+
+>>> Video ID: pair_043_vA_aB <<<
+10.5050535 4.3119106
+
+>>> Video ID: pair_043_vB_aA <<<
+9.89261 4.497673
+
+>>> Video ID: pair_044_vA_aB <<<
+8.652399 6.290742
+
+>>> Video ID: pair_044_vB_aA <<<
+9.168534 4.6756315
+
+>>> Video ID: pair_045_vA_aB <<<
+10.586167 3.9129581
+
+>>> Video ID: pair_045_vB_aA <<<
+10.752534 4.047222
+
+>>> Video ID: pair_046_vA_aB <<<
+8.111386 5.3340225
+
+>>> Video ID: pair_046_vB_aA <<<
+9.462125 3.547182
+
+>>> Video ID: pair_047_vA_aB <<<
+10.344103 2.5611382
+
+>>> Video ID: pair_047_vB_aA <<<
+8.967792 4.4381113
+
+>>> Video ID: pair_048_vA_aB <<<
+8.536846 6.400035
+
+>>> Video ID: pair_048_vB_aA <<<
+8.994069 6.2598944
+
+>>> Video ID: pair_049_vA_aB <<<
+9.94076 4.96262
+
+>>> Video ID: pair_049_vB_aA <<<
+9.130503 4.8870687
+
+>>> Video ID: pair_050_vA_aB <<<
+9.686729 3.8555336
+
+>>> Video ID: pair_050_vB_aA <<<
+9.300145 5.3694115
