@@ -10,7 +10,7 @@ WORKSPACE="/app"                        # 容器内工作目录
 
 # 获取脚本所在目录（即JoyGen目录）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-JOYGEN_DIR="$SCRIPT_DIR"
+JOYGEN_DIR="$SCRIPT_DIR"                # JoyGen目录
 
 # ========== 工具函数 ==========
 
